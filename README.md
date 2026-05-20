@@ -1,4 +1,4 @@
-# crep - The Blade
+# diese - The Blade v3
 
 **A minimal, hardened, static setuid root elevation tool.**
 
@@ -6,15 +6,17 @@ Built for those who don't trust sudo, doas, or pkexec.
 
 ## WARNING
 This is a **setuid root binary**. Treat it like a loaded gun pointed at your own head.
+
 - Audit every line before compiling.
 - Recompile with your own MAGIC string on every deployment.
 - Never leave it on untrusted or shared systems.
 - The moment you `chmod 4755` it, the box now has your custom root vector.
 
-## Features (v2.0)
+## Features (v3.0)
+- Cross-platform: Linux + FreeBSD support
 - Static binary (no .so hijacking)
-- Full environment sanitization (`clearenv`)
-- `PR_SET_NO_NEW_PRIVS` + no core dumps
+- Full environment sanitization (`clearenv` + dangerous LD_* vars)
+- Platform-specific hardening (`prctl` / `procctl`)
 - Stack protector, FORTIFY_SOURCE, RELRO, PIE
 - argv wiping
 - Least privilege flow with `setresuid`
@@ -24,33 +26,33 @@ This is a **setuid root binary**. Treat it like a loaded gun pointed at your own
 ```bash
 make
 # or manually:
-gcc -static -O3 -s -fstack-protector-strong -fPIE -pie \
-    -Wl,-z,relro,-z,now -D_FORTIFY_SOURCE=2 crep.c -o crep
-strip --strip-all crep
+cc -static -O3 -s -fstack-protector-strong -fPIE -pie \
+    -Wl,-z,relro,-z,now -D_FORTIFY_SOURCE=2 diese.c -o diese
+strip --strip-all diese
 ```
 
 ## Install
 ```bash
-sudo chown root:root crep
-sudo chmod 4755 crep
-sudo mv crep /usr/local/bin/crep
+sudo chown root:wheel diese   # or root:root on Linux
+sudo chmod 4755 diese
+sudo mv diese /usr/local/bin/diese
 ```
 
 ## Usage
 ```bash
-crep whoami
-crep id
-crep "nmap -sS -p- -T4 target"
-crep /bin/sh
+diese whoami
+diese id
+diese "nmap -sS -p- -T4 target"
+diese /bin/sh
 ```
 
 ## Security Notes
 - Change the `MAGIC` define and recompile often.
-- Consider renaming the binary to something boring (`systemd-logger`, `klogd` etc.)
-- Pair with log cleaners and anti-forensic hooks for real ops.
-- Capabilities-based version coming in v3 (no full root).
+- Rename the binary to something boring before deploying.
+- Pair with log cleaners and anti-forensic hooks.
+- Consider capability-based version for least privilege.
 
-## Why crep?
+## Why diese?
 Because every elevation tool is a potential backdoor. This one is *yours*.
 
 ---

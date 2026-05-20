@@ -1,18 +1,14 @@
-CC = gcc
-CFLAGS = -static -O3 -s -fstack-protector-strong -fPIE -pie -Wl,-z,relro,-z,now -D_FORTIFY_SOURCE=2
+CC = cc
+CFLAGS = -static -O3 -s -fstack-protector-strong -fPIE -pie \
+         -Wl,-z,relro,-z,now -D_FORTIFY_SOURCE=2
 
-all: crep
+all: diese
 
-crep: crep.c
-	$(CC) $(CFLAGS) crep.c -o crep
-	strip --strip-all crep
+diese: diese.c
+	$(CC) $(CFLAGS) diese.c -o diese
+	strip --strip-all diese 2>/dev/null || strip diese
 
 clean:
-	rm -f crep
+	rm -f diese
 
-install: crep
-	sudo chown root:root crep
-	sudo chmod 4755 crep
-	sudo mv crep /usr/local/bin/crep
-
-.PHONY: all clean install
+.PHONY: all clean
