@@ -1,62 +1,54 @@
-# diese - The Blade v3
+# diese - The Blade v3.5
 
-**A minimal, hardened, static setuid root elevation tool.**
-
+A minimal, hardened, setuid root elevation tool with trigger protection.
 Built for those who don't trust sudo, doas, or pkexec.
 
 ## WARNING
-This is a **setuid root binary**. Treat it like a loaded gun pointed at your own head.
 
+**This is a loaded gun.** Treat it with extreme paranoia.
+
+- This binary becomes a persistent root vector once chmod 4755.
+- Anyone with physical or initial access can try to use it.
+- The trigger phrase is your only protection against random execution.
+- Recompile with your own trigger and MAGIC string before every deployment.
+- Never leave the source on untrusted systems.
 - Audit every line before compiling.
-- Recompile with your own MAGIC string on every deployment.
-- Never leave it on untrusted or shared systems.
-- The moment you `chmod 4755` it, the box now has your custom root vector.
+- On compromised systems this can be used against you.
 
-## Features (v3.0)
-- Cross-platform: Linux + FreeBSD support
-- Static binary (no .so hijacking)
-- Full environment sanitization (`clearenv` + dangerous LD_* vars)
-- Platform-specific hardening (`prctl` / `procctl`)
-- Stack protector, FORTIFY_SOURCE, RELRO, PIE
-- argv wiping
-- Least privilege flow with `setresuid`
-- Clean drop to interactive shell or execute command
+## Build Instructions
 
-## Build
+### On FreeBSD / Linux
+
 ```bash
+git clone https://github.com/TwrstLOL/diese.git
+cd diese
+make clean
 make
-# or manually:
-cc -static -O3 -s -fstack-protector-strong -fPIE -pie \
-    -Wl,-z,relro,-z,now -D_FORTIFY_SOURCE=2 diese.c -o diese
-strip --strip-all diese
 ```
 
-## Install
+Then install:
+
 ```bash
-sudo chown root:wheel diese   # or root:root on Linux
+sudo chown root:wheel diese
 sudo chmod 4755 diese
 sudo mv diese /usr/local/bin/diese
 ```
 
 ## Usage
+
 ```bash
-diese whoami
-diese id
-diese "nmap -sS -p- -T4 target"
-diese /bin/sh
+diese diese1337 id
+diese diese1337 whoami
+diese diese1337 /bin/sh
 ```
 
-## Security Notes
-- Change the `MAGIC` define and recompile often.
-- Rename the binary to something boring before deploying.
-- Pair with log cleaners and anti-forensic hooks.
-- Consider capability-based version for least privilege.
+Change the `TRIGGER` in `diese.c` and recompile for better security.
 
-## Why diese?
-Because every elevation tool is a potential backdoor. This one is *yours*.
+## Features
+- Cross-platform (Linux + FreeBSD)
+- Trigger phrase protection
+- Environment + argv sanitization
+- No new privileges hardening
+- Stripped binary
 
----
-
-**fsociety. We are legion.**
-
-Built in the shadows. Use at your own risk.
+**Stay in the shadows.**

