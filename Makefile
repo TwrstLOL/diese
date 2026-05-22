@@ -1,14 +1,13 @@
-CC = cc
-CFLAGS = -O3 -s -fstack-protector-strong -fPIE -D_FORTIFY_SOURCE=2 -fvisibility=hidden
-LDFLAGS = -pie -Wl,-z,relro,-z,now
-
-all: diese
+CC      = cc
+CFLAGS  = -Wall -Wextra -Wpedantic -O2 -D_FORTIFY_SOURCE=2 \
+           -fstack-protector-strong -fPIE -pie
+LDFLAGS = -Wl,-z,relro,-z,now
 
 diese: diese.c
-	$(CC) $(CFLAGS) $(LDFLAGS) diese.c -o diese
-	strip diese 2>/dev/null || true
-	@echo "[+] diese v3.5 ready"
-	@echo "    sudo chown root:wheel diese && sudo chmod 4755 diese"
+	$(CC) $(CFLAGS) $(LDFLAGS) -o diese diese.c
+	chown root:root diese
+	chmod 4755 diese       # setuid root
 
-clean:
-	rm -f diese
+install: diese
+	install -o root -g root -m 4755 diese /usr/local/bin/diese
+	install -o root -g root -m 0640 diese.conf.example /etc/diese.conf
